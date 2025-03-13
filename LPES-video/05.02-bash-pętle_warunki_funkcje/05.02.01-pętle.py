@@ -99,7 +99,7 @@ clipData += [
 			'Jeżeli zakończy się sukcesem (zwróci zero) to warunek jest spełniony, <m> jeżeli zwróci coś nie zerowego to warunek jest nie spełniony i pętla się zakończy. <mark name="while2" />'
 			
 			'Warunek może być zanegowany poprzez użycie <m> wykrzyknika (wokół którego muszą być spacje). <m>'
-			'Co jest szczególnie wygodne jeżeli sprawdzamy kod powrotu <m> jakiegoś programu, a nie zwykły warunek realizowany <m> komendą test lub nawiasami kwadratowymi. <mark name="while3" />'
+			'Użycie wykrzyknika jest wygodne jeżeli sprawdzamy kod powrotu <m> jakiegoś programu, a nie zwykły warunek realizowany <m> komendą test lub nawiasami kwadratowymi. <mark name="while3" />'
 			
 			'Chyba najczęstszym zastosowaniem pętli while w bashu <m> jest czytanie pliku linia po linii. <m>'
 			'Możemy wykorzystać do tego komendę read, która wczytuje <m> pojedynczą linię ze swojego standardowego wejścia <m> i zapisuje ją do zmiennej o nazwie przekazanej jako argument. <m>'
@@ -134,7 +134,7 @@ clipData += [
 			'Zatem w konstrukcjach typu while read, pętla while może być <m> uruchamiana w procesie potomnym obecnej powłoki, <m>'
 				'efektem czego będzie to że w tych przypadkach wykonywane modyfikacje <m> zmiennych wewnątrz takiej pętli nie będą widoczne poza nią. <mark name="code_while2" />'
 			'Problem ten można obejść przekazując dane do pętli z pliku. <m>'
-			'Jeżeli dane te są wynikiem działania jakiegoś polecenia, <m> możemy skorzystać a pliku tymczasowego <m>'
+			'Jeżeli dane te są wynikiem działania jakiegoś polecenia, <m> możemy skorzystać z pliku tymczasowego <m>'
 				'lub ze składni basha pozwalającej na podstawienie <m> standardowego wyjścia polecenia jako pliku. <m>'
 			'Możliwe jest też uruchomienie pętli while jako osobnego skryptu <m> lub funkcji bashowej i skorzystanie z kodu powrotu <m> do odebrania informacji z wnętrza pętli. <m>'
 		]

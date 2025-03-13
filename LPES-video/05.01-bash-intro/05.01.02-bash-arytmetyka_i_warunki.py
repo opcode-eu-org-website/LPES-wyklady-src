@@ -84,7 +84,7 @@ clipData += [
 			'Należy zwrócić uwagę na umieszczenie kodu pythonowego w podwójnych cudzysłowach, <m> co pozwala na podstawienie pod dolar d wartości zmiennej d. <m>'
 			'Oraz na umieszczenie całego tego polecenia w pojedynczych nawiasach okrągłych, <m> przed którymi wystepuje znak dolara, <m>'
 				'Jest to operator umożliwiający pobranie do zmiennej <m> standardowego wyjścia uruchomionego polecenia, <m> na którym Python wypisał wynik. <mark name="float3" />'
-			'Alternatywnym zapisem, widocznym teraz na ekranie, jest użycie tzw. backticks.  <m>'
+			'Alternatywnym zapisem, widocznym teraz na ekranie, jest użycie backticks. <m>'
 			
 			'W odróżnieniu od nich, jednak operator dolar nawiasy okrągłe może być zagnieżdżony, <mark name="float4" /> czyli wewnątrz kodu którego wyjście przechwytujemy <m> możemy też definiować zmienną przechwytującą jakieś wyjście. <mark name="callcat" />'
 			
@@ -105,11 +105,12 @@ clipData += [
 		'text' : [
 			'Można by używać operatora dolar i podwójne nawiasy okrągłe także <m> do obliczania wartości wyrażeń logicznych a nawet bitowych. <m>'
 			'Natomiast jest to bardzo rzadko spotykane i do obliczania wartości <m> wyrażeń logicznych typowo stosuje się nawiasy kwadratowe <mark name="kwadratowe" /> lub komendę test (zapisy te są równoważne). <m>'
-			'Można się też spotkać z operatorem podwójnego nawiasu kwadratowego, <m> ale jest to niestandardowe rozszerzenie basha, <m> którego nie będziemy tu omawiali. <m>'
 			
 			'Wynika to zapewne z dwóch ich cech. <m>'
 			'Po pierwsze wynik testowanego wyrażenia logicznego zwracają jako <m> kod powrotu, co okazuje się bardzo wygodne do łączenia ich z innymi poleceniami. <m>'
-			'Po drugie oferują oprócz sprawdzania typowych nierówności i równości <m> także sprawdzanie istnienia / nieistnienia plików itp. <mark name="test2" />'
+			'Po drugie oferują oprócz sprawdzania typowych nierówności i równości <m> także sprawdzanie istnienia / nieistnienia plików itp. <m>'
+			
+			'Można się też spotkać z operatorem podwójnego nawiasu kwadratowego, <m> ale jest to niestandardowe rozszerzenie basha, <m> którego nie będziemy tu omawiali. <mark name="test2" />'
 			
 			'Kod powrotu jest wyrażany w sposób typowy dla tej wartości <m> czyli zero oznacza sukces (spełnienie warunku), <m> natomiast coś nie zerowego porażkę (warunek nie spełniony). <m>'
 			'Mamy zatem do czynienia z logiką odwróconą. <m>'

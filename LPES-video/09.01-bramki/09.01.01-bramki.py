@@ -41,7 +41,12 @@ clipData += [
 			])],
 		],
 		'text' : [
-			'Elektronika cyfrowa zajmuje się przetwarzaniem informacji <m> reprezentowanych w postaci dyskretnych poziomów napięć identyfikowanych jako <m> zera i jedynki – wartości logicznego fałszu i prawdy. <mark name="bramki" />'
+			'Cyfrowość elektroniki polega na reprezentacji sygnałów <m> w formie abstrakcyjnych wartości liczbowych, <m> zamiast bezpośredniej wartości elektrycznych.'
+			'Liczby te zazwyczaj zapisywane są w systemie dwójkowym.'
+			'Napięcie poniżej jakiejś wartości odpowiada zeru na danej cyfrze, <m> natomiast powyżej jakiegoś poziomu jedynce.'
+			'Kolejnymi cyframi są napięcia w różnych miejscach obwodu („na kolejnych przewodach”) <m> lub w na pojedynczym przewodzie w kolejnych jednostkach czasu.'
+			'Taka reprezentacja w postaci dyskretnych poziomów napięć, <m> identyfikowanych jako zera i jedynki – wartości logicznego fałszu i prawdy, <m>'
+				'pozwala między innymi zwiększyć odporność na zakłócenia <m> i bezstratnie replikować taką cyfrową informację. <mark name="bramki" />'
 			
 			'Podstawowym elementem elektroniki cyfrowej są bramki logiczne, <m> odpowiadają one znanym nam już z programowania <m> funkcjom logicznym takim jak and, or, xor, not. <m>'
 			'Elektronicy bardzo często korzystają z zanegowanych <m> wariantów bramek and i or, czyli nand i nor. <m>'
