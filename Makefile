@@ -24,13 +24,17 @@ MAINDIR     := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 OUTDIR      := $(MAINDIR)/output-www
 TEXBUILDDIR := $(MAINDIR)/tmp-build
 LIBFILESDIR := $(MAINDIR)/OpCode.eu.org/OpCode-core/lib
-SVGICONURL  := https://bytebucket.org/OpCode-eu-org/svgiconset/raw/HEAD/other/
-export PATH := $(MAINDIR)/OpCode.eu.org/TextUtils/convert:$(PATH)
 
+include $(shell if [ ! -f "$(MAINDIR)/OpCode.eu.org/OpCode-core/Makefile" ]; then \
+	git submodule update --quiet --init "$(MAINDIR)/OpCode.eu.org" > /dev/null; \
+	cd "$(MAINDIR)/OpCode.eu.org" && make > /dev/null; \
+fi; echo "$(MAINDIR)/OpCode.eu.org/OpCode-core/Makefile")
 
 .PHONY: help init installDependencies all
 help:
-	@echo see README.md
+	@echo 
+	@echo See README.md
+	@echo 
 
 init: | checkout-submodules $(MAINDIR)/LPES-video/GoogleCloudTextToSpeach.py
 	mkdir -p "$(TEXBUILDDIR)" "$(OUTDIR)"
@@ -49,21 +53,6 @@ all:
 
 $(MAINDIR)/LPES-video/GoogleCloudTextToSpeach.py:
 	echo "token = ''" > $(MAINDIR)/LPES-video/GoogleCloudTextToSpeach.py
-
-#
-# submodules
-#
-
-.PHONY: checkout-submodules update-submodules protect-submodules
-
-checkout-submodules:
-	git submodule update --init --recursive
-
-#
-# include core makefile from TextUtils
-#
-
--include $(MAINDIR)/OpCode.eu.org/TextUtils/makefiles/buildWebSite.mk
 
 #
 # addionals files
