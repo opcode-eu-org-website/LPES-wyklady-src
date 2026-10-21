@@ -123,14 +123,6 @@ def LaTex2Image(inFilePath, convertTeX = None, convertTeXAgs = None, dpi = 170, 
 	outFilePath = cacheDir + fileName + ".tex.png"
 	
 	if not checkCachedFile(outFilePath, idStr):
-		# prepare build dir
-		if not os.path.isfile(buildDir + "tikzPackets.sty"):
-			try:
-				os.mkdir(buildDir)
-			except FileExistsError:
-				pass
-			os.system("wget -O '" + buildDir + "tikzPackets.sty' 'https://bitbucket.org/OpCode-eu-org/latex-libs/raw/HEAD/pkgs/tikzPackets.sty'")
-		
 		# convert source
 		if convertTeX:
 			convertTeX(inFilePath, buildDir + fileName + ".tex", convertTeXAgs)

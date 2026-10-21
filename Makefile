@@ -38,13 +38,10 @@ help:
 
 init: | checkout-submodules $(MAINDIR)/LPES-video/GoogleCloudTextToSpeach.py
 	mkdir -p "$(TEXBUILDDIR)" "$(OUTDIR)"
-	@(cd OpCode.eu.org && ln -fs $(MAINDIR)/output-www $(MAINDIR)/tmp-build . && make init )
-	@echo ""
-	@echo ""
-	@echo -e '\033[1;96m Congratulation, all repos init OK \033[0;m\n'
-	@echo "If you have installed external dependencies you can build this project."
-	@echo "If not READ OpCode.eu.org/README.md and install dependencies of that submodule:"
-	@(cd OpCode.eu.org && make --no-print-directory help | grep -v 'make init' | sed '/you must install/,+1d')
+	cd $(MAINDIR)/OpCode.eu.org && ln -fs $(MAINDIR)/output-www $(MAINDIR)/tmp-build . && make init
+
+installDependencies:
+	cd $(MAINDIR)/OpCode.eu.org && $(SUDO_CMD) make installDependencies
 
 all:
 	$(MAKE) buildAll

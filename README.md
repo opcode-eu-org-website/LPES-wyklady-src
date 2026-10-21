@@ -3,35 +3,20 @@ Repozytorium zawiera źródła skryptów oraz wykładów video dla zajęć kursu
 prowadzonego w ramach projektu
 „[Matematyka dla Ciekawych Świata](http://ciekawi.icm.edu.pl/)”.
 
-## Zależności
-
-Repozytorium korzysta z *git submodule* do śledzenia repozytoriów z których korzysta.
-
-Główną tego typu zależnością jest [OpCode.eu.org](https://bitbucket.org/OpCode-eu-org/opcode-main) wraz z jego zależnościami.
-Repozytorium to zawiera znaczną część treści skryptów i część obrazków używanych w wykładach.
-Repozytorium to (wraz z jego zależnościami) dostarcza także systemu budowania dla skryptów i
-dlatego w celu kompilacji skryptów do postaci PDF konieczna jest instalacja zależności opisanych w jego dokumentacji.
-
-### Inicjalizacja i instalacja zależności
+## Inicjalizacja i instalacja zależności
 
 Po sklonowaniu repozytorium należy:
 
 1. pobrać wykorzystywane submoduły przy pomocy polecenia `make init`
-2. zapoznać się z [.OpCode.eu.org/README.md](.OpCode.eu.org/README.md) i zainstalować zależności tego submodułu
-
-**Uwaga:** Samo wykonanie `make init` jest wystarczające do używanie tego repozytorium pod warunkiem posiadania zainstalowanych wymaganych do zbudowania danego pliku/katalogu narzędzi (np. wget, lualtex).
-          **Nie ma potrzeby budowania repozytorium .OpCode.eu.org.**
-          Sugerowane jest tylko zainstalowanie jego zależności (czyli tych narzędzi potrzebnych do budowania poszczególnych plików).
-          Jednak polecenia `sudo make installDependencies` opisane w [.OpCode.eu.org/README.md](.OpCode.eu.org/README.md) używają apt do instalacji wymaganych pakietów oprogramowania i są dedykowane dla Debian Buster.
-
-Uaktualnienie wersji submodułów używanej przez to repo możliwe jest przy pomocy polecenia: `make update-submodules`
+2. zainstalować zależności przy pomocy `make installDependencies`
+   (UWAGA: polecenie to używa apt do instalacji pakietów, zatem wspiera jedynie systemy oparte na Debianie, na pozostałych systemach konieczna jest ręczna instalacja odpowiednich zależności)
 
 ## Budowanie dokumentów PDF
 
 * Aby zbudować wszystkie pliki można użyć polecenia `make all` (w danym podkatalogu lub w katalogu głównym).
 * Aby zbudować pojedynczy plik PDF w katalogu z jego źródłami należy uruchomić polecenie `make nazwa`, gdzie `nazwa` to nazwa pliku bez rozszerzenia, np. dla pliku `aaa.pdf` budowanego z `aaa.tex` będzie to `make aaa`.
 * Aby zbudować wersję dla prowadzącego do nazwy należy dodać przyrostek `--teacher`, np. `make aaa--teacher`
-* Aby wymusić przebudowanie pliku (ignorując śledzenie zależności *make*) należy dodać do polecenia `VERBOSE=1`, np. `make aaa VERBOSE=1`
+* Aby wymusić przebudowanie pliku (ignorując śledzenie zależności *make*) należy dodać do polecenia `FORCE=1`, np. `make aaa FORCE=1`
 * Pliki wynikowe znajdują się w katalogu `output-www`
 
 ## Struktura
