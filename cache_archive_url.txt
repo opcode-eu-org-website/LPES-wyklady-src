@@ -1,0 +1,2 @@
+https://github.com/opcode-eu-org-website/LPES-wyklady-src/releases/download/2025-03-13/cache.circuitjs.tar.gz
+https://github.com/opcode-eu-org-website/LPES-wyklady-src/releases/download/2025-03-13/cache.text.tar.gz

@@ -200,7 +200,7 @@ def getAudioFiles(txt, idStr=None):
 	
 	if not checkCachedFile(fileName + ".audio", idStr) or not checkCachedFile(fileName + ".info"):
 		logInfo("generate new audio files for \"" + idStr + "\": " + fileName, yellow)
-		txt = re.sub("<[^<>]*?>\[(.*?)\]", "\\1", txt)
+		txt = re.sub(r"<[^<>]*?>\[(.*?)\]", "\\1", txt)
 		i = 1
 		while '<m>' in txt:
 			txt = txt.replace('<m>', '<mark name="m_' + str(i) + '"/>', 1)
@@ -225,9 +225,9 @@ def getAudioClipAndSubtitles(txt, startOffset, localStartOffset, speed=1.0):
 	
 	# create subtitles
 	subtitles = []
-	txt = re.sub("<([^<>]*?)>\[.*?\]", "\\1", txt) # pronunciation tips <world>[pronunciation] -> world
-	txt = re.sub("<break[^<>]*?>", "", txt)
-	txt = re.sub("<mark [^<>]*?>", "<m>", txt)
+	txt = re.sub(r"<([^<>]*?)>\[.*?\]", "\\1", txt) # pronunciation tips <world>[pronunciation] -> world
+	txt = re.sub(r"<break[^<>]*?>", "", txt)
+	txt = re.sub(r"<mark [^<>]*?>", "<m>", txt)
 	txt = txt.split("<m>")
 	timepoints = sorted(times.values())
 	for t, s in zip( timepoints, txt ):
@@ -245,17 +245,17 @@ def getAudioClipAndSubtitles(txt, startOffset, localStartOffset, speed=1.0):
 # circuitjs simulation to video
 #
 
-circuitjsBaseURL = "http://circuitjs.opcode.eu.org/circuitjs.html?hideMenu=true&hideSidebar=true&"
+circuitjsBaseURL = "http://cs.opcode.eu.org/circuitjs.html?hideMenu=true&"
 circuitjsSimulationList = mainDir + "simulations.txt"
 
 def runActionOnCircuitjs(browser, action, test=None):
 	if (action[0] == "switch"):
-		webRender.clickElement(browser, action[1], action[2], "/html/body/div[2]/div[2]/div/div[4]/canvas", test)
+		webRender.clickElement(browser, action[1], action[2] + 60, "/html/body/div[2]/div[2]/div/div[4]/canvas", test)
 	elif (action[0] == "setSlider"):
 		num   = action[1]
 		val   = action[2]
-		xpath = "/html/body/div[2]/div[2]/div/div[3]/table/tbody/tr[" + str (10+num*2) + "]/td/table/tbody/tr/td/canvas"
-		webRender.clickElement(browser, int(20 + 127 * val), 7, xpath, test)
+		xpath = "/html/body/div[2]/div[2]/div/div[2]/table/tbody/tr[" + str (10+num*2) + "]/td/table/tbody/tr/td/canvas"
+		webRender.clickElement(browser, int(127 * val - 64), 0, xpath, test, originAtCenter=True)
 	else:
 		webRender.runAction(browser, action, test)
 
@@ -557,7 +557,7 @@ def parseSubClipData(data, screens, startOffset, onlyAudio = False, outputSize =
 	return video, subtitles
 
 
-def parseClipData(data, filename = None, endTitle = None, endTitleTime = 5, writeInBackground = False, overlayImg = None, onlyAudio = False, outputSize = (1280, 720)):
+def parseClipData(data, outDir = None, filename = None, endTitle = None, endTitleTime = 5, writeInBackground = False, overlayImg = None, onlyAudio = False, outputSize = (1280, 720)):
 	def consoleReset(width = 80, height = 24, blinkingCursor=0.5):
 		screen = pyte.Screen(width, height)
 		stream = pyte.Stream(screen)
@@ -598,17 +598,19 @@ def parseClipData(data, filename = None, endTitle = None, endTitleTime = 5, writ
 		pass
 	
 	if filename:
-		writeVTT(subtitles, filename)
-		if onlyAudio:
-			video.write_audiofile(filename + ".mp3")
-		else:
-			video.write_videofile(filename + ".mp4", fps=24)
+		writeVTT(subtitles, buildDir + filename)
+		
+		audio = video if onlyAudio else video.audio
+		audio.write_audiofile(buildDir + filename + ".mka", 44100, codec="libvorbis", ffmpeg_params=["-ac", "1"])
+		
+		if not onlyAudio:
+			video.write_videofile(buildDir + filename + ".mkv", fps=24, codec="libx265", audio=False, ffmpeg_params=["-crf", "32"])
 			if 'title' in data[0]:
 				title = "LPES " + data[0]['title'][0] + ": " + " ".join(data[0]['title'][1:]).strip()
 				title_cmd = '-metadata title="' + title + '"'
 			else:
 				title_cmd = ''
-			os.system("ffmpeg -i " + filename + ".mp4 -i " + filename + ".vtt -c copy " + title_cmd + " " + filename + ".mkv")
+			os.system("ffmpeg -i " + buildDir + filename + ".mkv -i " + buildDir + filename + ".mka -i " + buildDir + filename + ".vtt -c copy " + title_cmd + " " + outDir + filename + ".mkv")
 	
 	return video, subtitles
 
@@ -634,6 +636,12 @@ def writeVTT(subtitles, filename):
 		o.write(subtitles[i][1] + '\n\n')
 
 
+def mkdir(path):
+	try:
+		os.mkdir(path)
+	except FileExistsError:
+		pass
+	return path
 
 if __name__ == "__main__":
 	import sys, os, traceback, pprint
@@ -648,24 +656,10 @@ if __name__ == "__main__":
 		sys.stderr.write(eduMovie.red + ''.join(traceback.format_exception(type, value, tb)) + eduMovie.default)
 	sys.excepthook = myexcepthook
 	
-	# check and download geckodriver
-	eduMovie.webRender.geckodriverPath = eduMovie.buildDir + "/geckodriver"
-	if not os.path.isfile(eduMovie.webRender.geckodriverPath):
-		try:
-			os.mkdir(eduMovie.buildDir)
-		except FileExistsError:
-			pass
-		os.system("wget -O - 'https://github.com/mozilla/geckodriver/releases/download/v0.29.0/geckodriver-v0.29.0-linux64.tar.gz' | tar -xzf - -C '" + eduMovie.buildDir + "'")
-		if not os.path.isfile(eduMovie.webRender.geckodriverPath):
-			raise BaseException("Can't get geckodriver into " + eduMovie.webRender.geckodriverPath)
 	workdir = None
 	
-	# create output dir
-	outDir = eduMovie.mainDir + "/../output/"
-	try:
-		os.mkdir(outDir)
-	except FileExistsError:
-		pass
+	# create output dir (must end with /)
+	outDir = mkdir(eduMovie.mainDir + "/../output/")
 	
 	# init endTitleSVG variable, can be override in included files
 	endTitleSVG = "default.svg"
@@ -699,5 +693,5 @@ if __name__ == "__main__":
 	#print("clipData =", pprint.pformat(clipData, width=1024))
 	#eduMovie.parseClipData(clipData, onlyAudio=True)
 	#eduMovie.parseClipData(clipData)
-	#eduMovie.parseClipData(clipData, outDir + movieid + "_beta", endTitle=endTitlePNG, overlayImg=eduMovie.globalCacheBaseDir + eduMovie.cacheDir + 'draft.png')
-	eduMovie.parseClipData(clipData, outDir + movieid, endTitle=endTitlePNG)
+	#eduMovie.parseClipData(clipData, outDir, movieid + "_beta", endTitle=endTitlePNG, overlayImg=eduMovie.globalCacheBaseDir + eduMovie.cacheDir + 'draft.png')
+	eduMovie.parseClipData(clipData, outDir, movieid, endTitle=endTitlePNG)

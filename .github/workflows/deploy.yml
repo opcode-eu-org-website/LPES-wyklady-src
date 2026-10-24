@@ -1,0 +1,91 @@
+name: Deploy to Pages
+
+on:
+  workflow_dispatch:
+    inputs:
+      deploy_branch:
+        description: 'Cloudflare Pages deploy branch (default `main` -> production)'
+        required: true
+        type: string
+        default: 'main'
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3
+
+      - name: Download (prebuild) artifacts
+        run: |
+          mkdir output
+          cd LPES-video/
+          for f in [01]*; do
+            branch=$(echo $f | cut -c1-5 | tr . -)
+            wget -O "../output/$f.mkv" "https://$branch.video-opcode.pages.dev/$f.mkv" || true
+          done
+
+      - name: Create index and redirects
+        run: |
+          cp OpCode.eu.org/OpCode-core/lib/index.css output/
+          cp OpCode.eu.org/OpCode-core/lib/404.html output/
+          cd output && ls -l
+          python3 ../create_video_index.py
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './output'
+
+  deploy-github:
+    # https://opcode-eu-org-website.github.io/opcode-main
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  deploy-cloudflare:
+    # https://opcode.pages.dev/
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download GitHub Pages artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: github-pages
+          path: ./tmp-artifact
+
+      - name: Unpack Pages artifact
+        run: |
+          mkdir dist
+          ls -l ./tmp-artifact
+          tar -xvf ./tmp-artifact/*.tar -C dist
+          ls -l ./dist
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v4
+        with:
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          command: pages deploy dist --project-name=video-opcode --branch=test

@@ -1,0 +1,4 @@
+07.01.mkv	https://drive.google.com/file/d/1L-Ebx1EALOikeaa9f3gUMYSHCjEFDz_m/view	https://github.com/opcode-eu-org-website/LPES-wyklady-src/releases/download/2024-10-05/07.01.mkv	https://www.youtube.com/watch?v=TW-0SJ_wh08
+07.02.mkv	https://drive.google.com/file/d/1XxPNxuc5Iw_UG-_esQJ9P8YisiKtjwDY/view	https://github.com/opcode-eu-org-website/LPES-wyklady-src/releases/download/2024-10-05/07.02.mkv	https://www.youtube.com/watch?v=ivAGlEfHmDo
+07.03.mkv	https://drive.google.com/file/d/1T58Gt7jL3CD5MeooSiQh4C1vFmNcBG_Q/view	https://github.com/opcode-eu-org-website/LPES-wyklady-src/releases/download/2024-10-05/07.03.mkv	https://www.youtube.com/watch?v=yszBafAY694
+07.04.mkv	https://drive.google.com/file/d/1LJOFVOqOL60zgyJRL6Fsg59edG-oQXDo/view	https://github.com/opcode-eu-org-website/LPES-wyklady-src/releases/download/2024-10-05/07.04.mkv	https://www.youtube.com/watch?v=dtcChhtck4k

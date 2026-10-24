@@ -101,7 +101,7 @@ if not eduMovie.checkCachedFile(digCacheFile, "dig output"):
 				return txt, l.split("\t")[-1]
 		if noFail:
 			return txt, ""
-		raise BaseException("no found IP in runAndGetIP")
+		raise BaseException(f"no found IP in runAndGetIP, cmd_output={txt}")
 	
 	code_dig = {}
 	

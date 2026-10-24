@@ -24,19 +24,25 @@
 
 from selenium.webdriver import Firefox
 from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.common.action_chains import ActionChains
-import time, subprocess
+from pyvirtualdisplay import Display
+import os, time, subprocess
 
-geckodriverPath = './geckodriver'
+geckodriverPath = '/usr/local/bin/geckodriver'
 
-def createBrowser(width, height, headless = False):
+def createBrowser(width, height, headless = False, fullScreen = False):
 	if headless:
 		options = Options()
 		options.add_argument('-headless')
+	elif fullScreen:
+		options = Options()
+		options.add_argument('--kiosk')
 	else:
 		options = None
 	
-	browser = Firefox(executable_path=geckodriverPath, options=options)
+	service = Service(executable_path=geckodriverPath)
+	browser = Firefox(service=service, options=options)
 	windowInfo = browser.execute_script(
 		"return [window.outerWidth, window.innerWidth, window.outerHeight, window.innerHeight, window.mozInnerScreenX, window.mozInnerScreenY];"
 	)
@@ -46,8 +52,14 @@ def createBrowser(width, height, headless = False):
 	
 	return browser, windowInfo
 
-def clickElement(browser, x, y, xpath="/html/body", wait=None):
-	canvas = browser.find_elements_by_xpath(xpath)[0]
+def clickElement(browser, x, y, xpath="/html/body", wait=None, originAtCenter=False):
+	print(f" -> clickElement: {xpath} + offest({x}, {y})")
+	canvas = browser.find_element("xpath", xpath)
+	if not originAtCenter:
+		x -= canvas.size['width']/2
+		y -= canvas.size['height']/2
+	print(f"   element center = {canvas.location}, offret from center = ({x}, {y})")
+	
 	if wait == None:
 		ActionChains(browser).move_to_element_with_offset(canvas, x, y).click().perform()
 	else:
@@ -65,7 +77,11 @@ def runAction(browser, action, test=None):
 		time.sleep(action[1])
 
 def render(url, preTime, postTime, actions = [], preActions = [], outfile="/dev/shm/out.mp4", width = 1280, height = 720, fps = 25, runAction = runAction):
-	browser, winfo = createBrowser(width, height)
+	display = Display(visible=False, size=(width, height), color_depth=24, extra_args=['-nocursor'])
+	display.start()
+	display_id = os.environ.get('DISPLAY', ':99')
+	
+	browser, winfo = createBrowser(width, height, fullScreen=True)
 	browser.get(url)
 	
 	time.sleep(1)
@@ -75,7 +91,8 @@ def render(url, preTime, postTime, actions = [], preActions = [], outfile="/dev/
 		runAction(browser, action)
 	
 	print("start recorder")
-	recorder = subprocess.Popen(f'ffmpeg -f x11grab -framerate {fps} -video_size {width}x{height} -t {preTime+postTime} -i :0.0+{winfo[4]},{winfo[5]} -y {outfile}', shell=True)
+	
+	recorder = subprocess.Popen(f'ffmpeg -f x11grab -framerate {fps} -video_size {width}x{height} -t {preTime+postTime} -i {display_id}+{winfo[4]},{winfo[5]} -y {outfile}', shell=True)
 	# use ffmpeg, browser.save_screenshot is too slow for:
 	#   for i in range(int(preTime * fps)):   browser.save_screenshot("/dev/shm/in/rend_A{:04d}.png".format(i))
 	
@@ -93,5 +110,6 @@ def render(url, preTime, postTime, actions = [], preActions = [], outfile="/dev/
 	recorder.wait()
 	
 	browser.quit()
+	display.stop()
 	
 	return outfile

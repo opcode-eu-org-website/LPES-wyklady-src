@@ -1,0 +1,84 @@
+name: Build movies
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_mode:
+        description: 'Directory prefixes to build (eg. `01.01  03`)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install Firefox
+        uses: browser-actions/setup-firefox@v1
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make python3-moviepy python3-selenium xvfb bind9-dnsutils
+          sudo make installDependencies
+          pip3 install --break-system-packages pyte asciicast2movie pyvirtualdisplay
+          [ -f /usr/local/bin/geckodriver ] || wget -O - 'https://github.com/mozilla/geckodriver/releases/download/v0.37.1/geckodriver-v0.37.1-linux64.tar.gz' | sudo tar -xzf - -C /usr/local/bin/
+          
+          # moviepy (bug)fixes
+          sudo sed -e 's#<policy domain="path" rights="none" pattern="@\*"/>#<policy domain="path" rights="read" pattern="@*"/>#' -i /etc/ImageMagick-6/policy.xml   
+          sudo sed -e '/def use_clip_fps_by_default/a \    return f(clip, *a, **k)' -i /usr/lib/python3/dist-packages/moviepy/decorators.py
+          
+          # firefox
+          ln -sf /opt/hostedtoolcache/firefox/latest/x64/firefox /usr/local/bin/
+
+      - name: Prepare to build
+        run: |
+        
+          # setup for build images from LaTeX sources
+          mkdir -p tmp-build && ln -sf $(realpath OpCode.eu.org/booklets/booklets-sections/) tmp-build
+          
+          # download cache
+          mkdir -p cache
+          while read url; do
+            filename=$(basename "$url")
+            if [ ! -e "cache/$filename" ]; then
+                wget -O "cache/$filename" "$url"
+                tar -xzf "cache/$filename" -C cache/
+            fi
+          done < cache_archive_url.txt
+          (cd cache; find . -path "./*/*" -type f -exec mv -n {} . \;)
+          
+      - name: Run build script
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          cd LPES-video
+          for build_prefix in ${{ inputs.build_mode }}; do
+            for d in $build_prefix*; do
+              if python3 eduMovie.py $d/*.py; then
+                (
+                  cd ../output
+                  branch=$(echo $d | cut -c1-5 | tr . -)
+                  mkdir -p "deploy/$branch"
+                  mv "$d.mkv" "deploy/$branch/"
+                  npx wrangler@latest pages deploy "deploy/$branch" \
+                    --branch="$branch" \
+                    --project-name=video-opcode
+                )
+              fi
+            done
+          done
