@@ -38,7 +38,7 @@ jobs:
           cd LPES-video/
           for f in [01]*; do
             branch=$(echo $f | cut -c1-5 | tr . -)
-            wget -O "../output/$f.mkv" "https://$branch.video-opcode.pages.dev/$f.mkv" || true
+            wget -O "../output/$f.mkv" "https://$branch.video-opcode.pages.dev/$f.mkv" || rm -f "../output/$f.mkv"
           done
 
       - name: Create index and redirects
@@ -46,7 +46,7 @@ jobs:
           cp OpCode.eu.org/OpCode-core/lib/index.css output/
           cp OpCode.eu.org/OpCode-core/lib/404.html output/
           cd output && ls -l
-          python3 ../create_video_index.py
+          ../create_video_index.py
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
@@ -88,4 +88,4 @@ jobs:
         with:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          command: pages deploy dist --project-name=video-opcode --branch=test
+          command: pages deploy dist --project-name=video-opcode --branch=${{ inputs.deploy_branch }}

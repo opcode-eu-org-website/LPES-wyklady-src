@@ -1,3 +1,10 @@
+#!/usr/bin/python3
+
+# SPDX-FileCopyrightText: Robert Ryszard Paciorek <rrp@opcode.eu.org>
+# SPDX-License-Identifier: MIT
+
+# Created with Gemini AI, 2026
+
 import os
 import re
 import csv
