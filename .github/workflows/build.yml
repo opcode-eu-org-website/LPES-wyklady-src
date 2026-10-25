@@ -26,9 +26,6 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Install Firefox
-        uses: browser-actions/setup-firefox@v1
-
       - name: Install system dependencies
         run: |
           sudo apt-get update
@@ -43,6 +40,9 @@ jobs:
           
           # firefox
           ln -sf /opt/hostedtoolcache/firefox/latest/x64/firefox /usr/local/bin/
+
+      - name: Install Firefox
+        uses: browser-actions/setup-firefox@v1
 
       - name: Prepare to build
         run: |
@@ -67,6 +67,7 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
           cd LPES-video
+          echo "token = '${{ secrets.GOOGLE_CLOUD_TEXT_TO_SPEACH_TOKEN }}'" > GoogleCloudTextToSpeach.py
           for build_prefix in ${{ inputs.build_mode }}; do
             for d in $build_prefix*; do
               if python3 eduMovie.py $d/*.py; then
