@@ -209,7 +209,7 @@ def main():
 						
 					# 2.2.1 Dodajemy linki zamiast /PLIK w ramach jednego <li>
 					# Przypisujemy odpowiednie nazwy etykiet dla czytelności (np. Drive, GitHub, YouTube)
-					labels = ["Google Drive", "GitHub", "YouTube"]
+					labels = ["MEGA", "GitHub", "YouTube"]
 					div_links = []
 					div_links.append(f'<div class="video_name">{nazwa}</div> <br />')
 					for i, url in enumerate(links):
